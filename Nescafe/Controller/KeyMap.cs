@@ -33,46 +33,65 @@ namespace Nescafe
 
             foreach(String line in File.ReadLines(path))
             {
-                // Split up the line
-                String[] lineComponents = line.Split(':');
-
-                // Check Length
-                if(lineComponents.Length == 2)
-                {
-                    String rawKey = lineComponents[0];
-                    String rawButton = lineComponents[1];
-
-                    Keys key;
-                    Controller.Button button;
-
-                    // Try to Parse the Key
-                    if(Enum.TryParse(rawKey, out key))
-                    {
-                        // Try and Parse the Button
-                        if (Enum.TryParse(rawButton, out button))
-                        {
-                            this.Map.Add(new KeyMapItem(key, button));
-                        }
-                        else
-                        {
-                            throw new ArgumentException("Invalid KeyMap file. " + rawButton + " is not a valid button name.");
-                        }
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Invalid KeyMap file. " + rawKey + " is not a valid key name.");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid KeyMap file. Wrong formatting.");
-                }
+                this.Map.Add(this.ParseLine(line));
             }
         }
 
         public void Save(String path)
         {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path))
+            {
+                foreach (KeyMapItem item in this.Map)
+                {
+                    file.WriteLine(item.Key.ToString() + ":" + item.Button.ToString());
+                }
+            }        
+        }
 
+        private KeyMapItem ParseLine(String line)
+        {
+            // Split up the line
+            String[] lineComponents = line.Split(':');
+
+            // Check Length
+            if (lineComponents.Length == 2)
+            {
+                return new KeyMapItem(this.ParseKey(lineComponents[0]), this.ParseButton(lineComponents[1]));   
+            }
+            else
+            {
+                throw new ArgumentException("Invalid KeyMap file. Wrong formatting.");
+            }
+        }
+
+        private Keys ParseKey(String rawKey)
+        {
+            Keys key;
+
+            // Try to Parse the Key
+            if (Enum.TryParse(rawKey, out key))
+            {
+                return key;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid KeyMap file. " + rawKey + " is not a valid key name.");
+            }
+        }
+
+        private Controller.Button ParseButton(String rawButton)
+        {
+            Controller.Button button;
+
+            // Try and Parse the Button
+            if (Enum.TryParse(rawButton, out button))
+            {
+                return button;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid KeyMap file. " + rawButton + " is not a valid button name.");
+            }
         }
     }
 }
