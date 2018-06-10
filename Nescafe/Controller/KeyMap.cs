@@ -8,10 +8,19 @@ using System.Windows.Forms;
 
 namespace Nescafe
 {
+    /// <summary>
+    /// Holds a mapping of Keyboard keys to controller buttons. 
+    /// </summary>
     class KeyMap
     {
+        /// <summary>
+        /// List of all currently loaded mappings. 
+        /// </summary>
         public List<KeyMapItem> Map { get; set; }
 
+        /// <summary>
+        /// Load default keymapping. 
+        /// </summary>
         public void Default()
         {
             this.Map = new List<KeyMapItem>()
@@ -27,6 +36,10 @@ namespace Nescafe
             };
         }
 
+        /// <summary>
+        /// Load key mappings from a file. 
+        /// </summary>
+        /// <param name="path">Path to the keymap file. </param>
         public void Load(String path)
         {
             this.Map = new List<KeyMapItem>();
@@ -37,6 +50,10 @@ namespace Nescafe
             }
         }
 
+        /// <summary>
+        /// Save key mappings to a file.
+        /// </summary>
+        /// <param name="path">path to keymap file.</param>
         public void Save(String path)
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(path))
@@ -48,6 +65,11 @@ namespace Nescafe
             }        
         }
 
+        /// <summary>
+        /// Parses a line from a keymap file into a KeyMapItem object. 
+        /// </summary>
+        /// <param name="line">Line to parse.</param>
+        /// <returns>A KeyMapItem object.</returns>
         private KeyMapItem ParseLine(String line)
         {
             // Split up the line
@@ -64,6 +86,11 @@ namespace Nescafe
             }
         }
 
+        /// <summary>
+        /// Converts a string to a Keys enum. 
+        /// </summary>
+        /// <param name="rawKey">A string containing the string representaion of the Keys object.</param>
+        /// <returns>A Keys object.</returns>
         private Keys ParseKey(String rawKey)
         {
             Keys key;
@@ -79,6 +106,11 @@ namespace Nescafe
             }
         }
 
+        /// <summary>
+        /// Converts a string to a Button enum. 
+        /// </summary>
+        /// <param name="rawButton">A string containing the string representaion of the Buttons enum.</param>
+        /// <returns>A Button enum.</returns>
         private Controller.Button ParseButton(String rawButton)
         {
             Controller.Button button;
