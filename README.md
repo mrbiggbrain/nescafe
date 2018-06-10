@@ -56,13 +56,20 @@ The NES CPU and PPU have been implemented to a fairly cycle accurate extent. Cer
 
 # Controls
 
-Controls cannot currently be configured.
+Default Controls are:
 
 - Arrow Keys = up,down,left,right
 - Z = A
 - X = B
 - Q = Start
 - W = Select
+
+Controls can now be customized. 
+To customize controls:
+
+- create a file called keymap.cfg in the same folder as the application. 
+- Enter one binding per line in the format {KeyboardKey}:{ControllerButton}
+
 
 # License
 
