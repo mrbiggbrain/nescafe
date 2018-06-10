@@ -229,10 +229,26 @@ namespace Nescafe
 
             KeyMap = new KeyMap();
 
-            if(File.Exists("keymap.json"))
+            // If a config file exists, try and load it. 
+            if(File.Exists("keymap.cfg"))
             {
-                this.KeyMap.Load("keymap.json");
+                try
+                {
+                    // Load Keymap. 
+                    this.KeyMap.Load("keymap.cfg");
+                    System.Console.WriteLine("Loaded Keymap. " + this.KeyMap.Map.Count + " mappings loaded.");
+                }
+
+                // Recover from problems with the keymap. 
+                catch(ArgumentException e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    this.KeyMap.Default();
+                }
+                
             }
+
+            // Otherwise use the default key map. 
             else
             {
                 this.KeyMap.Default();
