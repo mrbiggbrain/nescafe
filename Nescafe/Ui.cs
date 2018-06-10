@@ -5,23 +5,14 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Threading;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Nescafe
 {
     class Ui : Form
     {
 
-        List<KeyMapItem> KeyMap = new List<KeyMapItem>()
-        {
-            new KeyMapItem(Keys.Z, Controller.Button.A),
-            new KeyMapItem(Keys.X, Controller.Button.B),
-            new KeyMapItem(Keys.Left, Controller.Button.Left),
-            new KeyMapItem(Keys.Right, Controller.Button.Right),
-            new KeyMapItem(Keys.Up, Controller.Button.Up),
-            new KeyMapItem(Keys.Down, Controller.Button.Down),
-            new KeyMapItem(Keys.Q, Controller.Button.Start),
-            new KeyMapItem(Keys.W, Controller.Button.Select)
-        };
+        KeyMap KeyMap { get; set; }
 
         Bitmap _frame;
         Console _console;
@@ -53,6 +44,8 @@ namespace Nescafe
 
             _nesThread = new Thread(new ThreadStart(StartNes));
             _nesThread.IsBackground = true;
+
+            LoadKeyMap();
         }
 
         void StopConsole()
@@ -231,9 +224,24 @@ namespace Nescafe
             SetControllerButton(false, e);
         }
 
+        void LoadKeyMap()
+        {
+
+            KeyMap = new KeyMap();
+
+            if(File.Exists("keymap.json"))
+            {
+                this.KeyMap.Load("keymap.json");
+            }
+            else
+            {
+                this.KeyMap.Default();
+            }   
+        }
+
         void SetControllerButton(bool state, KeyEventArgs e)
         {
-            foreach(KeyMapItem item in KeyMap)
+            foreach(KeyMapItem item in KeyMap.Map)
             {
                 if(e.KeyCode == item.Key)
                 {

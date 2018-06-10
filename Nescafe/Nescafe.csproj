@@ -35,11 +35,12 @@
   <ItemGroup>
     <Compile Include="Cartridge.cs" />
     <Compile Include="Console.cs" />
-    <Compile Include="Controller.cs" />
+    <Compile Include="Controller\Controller.cs" />
+    <Compile Include="Controller\KeyMap.cs" />
     <Compile Include="Cpu.cs" />
     <Compile Include="CpuMemory.cs" />
     <Compile Include="Emulator.cs" />
-    <Compile Include="KeyMapItem.cs" />
+    <Compile Include="Controller\KeyMapItem.cs" />
     <Compile Include="Memory.cs" />
     <Compile Include="Ppu.cs" />
     <Compile Include="PpuMemory.cs" />
