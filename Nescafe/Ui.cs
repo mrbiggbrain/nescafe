@@ -4,11 +4,25 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Nescafe
 {
     class Ui : Form
     {
+
+        List<KeyMapItem> KeyMap = new List<KeyMapItem>()
+        {
+            new KeyMapItem(Keys.Z, Controller.Button.A),
+            new KeyMapItem(Keys.X, Controller.Button.B),
+            new KeyMapItem(Keys.Left, Controller.Button.Left),
+            new KeyMapItem(Keys.Right, Controller.Button.Right),
+            new KeyMapItem(Keys.Up, Controller.Button.Up),
+            new KeyMapItem(Keys.Down, Controller.Button.Down),
+            new KeyMapItem(Keys.Q, Controller.Button.Start),
+            new KeyMapItem(Keys.W, Controller.Button.Select)
+        };
+
         Bitmap _frame;
         Console _console;
 
@@ -219,32 +233,13 @@ namespace Nescafe
 
         void SetControllerButton(bool state, KeyEventArgs e)
         {
-            switch (e.KeyCode)
+            foreach(KeyMapItem item in KeyMap)
             {
-                case Keys.Z:
-                    _console.Controller.setButtonState(Controller.Button.A, state);
+                if(e.KeyCode == item.Key)
+                {
+                    _console.Controller.setButtonState(item.Button, state);
                     break;
-                case Keys.X:
-                    _console.Controller.setButtonState(Controller.Button.B, state);
-                    break;
-                case Keys.Left:
-                    _console.Controller.setButtonState(Controller.Button.Left, state);
-                    break;
-                case Keys.Right:
-                    _console.Controller.setButtonState(Controller.Button.Right, state);
-                    break;
-                case Keys.Up:
-                    _console.Controller.setButtonState(Controller.Button.Up, state);
-                    break;
-                case Keys.Down:
-                    _console.Controller.setButtonState(Controller.Button.Down, state);
-                    break;
-                case Keys.Q:
-                    _console.Controller.setButtonState(Controller.Button.Start, state);
-                    break;
-                case Keys.W:
-                    _console.Controller.setButtonState(Controller.Button.Select, state);
-                    break;
+                }
             }
         }
     }
