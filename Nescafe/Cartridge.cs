@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using Nescafe.Mappers;
 
 namespace Nescafe
@@ -81,8 +83,28 @@ namespace Nescafe
         /// <param name="path">The path to the .nes file to load</param>
         public Cartridge(string path)
         {
-            FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            BinaryReader reader = new BinaryReader(stream);
+            BinaryReader reader;
+
+            System.Console.WriteLine(Path.GetExtension(path));
+
+            if(Path.GetExtension(path) == ".zip")
+            {
+                ZipArchive archive = ZipFile.OpenRead(path);
+                ZipArchiveEntry firstRom = archive.Entries.First(F => Path.GetExtension(F.Name) == ".nes");
+                System.Console.WriteLine("Loading " + firstRom.Name + " from zip.");
+
+                Stream stream = firstRom.Open();
+                MemoryStream mStream = new MemoryStream();
+                stream.CopyTo(mStream);
+                reader = new BinaryReader(mStream);
+            }
+            else
+            {
+                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                reader = new BinaryReader(stream);
+
+            }
+
             Invalid = false;
             ParseHeader(reader);
             LoadPrgRom(reader);
@@ -168,6 +190,7 @@ namespace Nescafe
 
         void ParseHeader(BinaryReader reader)
         {
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
             // Verify magic number
             uint magicNum = reader.ReadUInt32();
             if (magicNum != HeaderMagic)

@@ -63,7 +63,7 @@ namespace Nescafe
             StopConsole();
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "NES ROMs | *.nes";
+            openFileDialog.Filter = "NES ROMs | *.nes;*.zip";
             openFileDialog.RestoreDirectory = true;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
