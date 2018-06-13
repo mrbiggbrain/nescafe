@@ -84,36 +84,23 @@ namespace Nescafe
         public Cartridge(string path)
         {
             BinaryReader reader;
+            this.Invalid = false;
 
-            if(Path.GetExtension(path) == ".zip")
+            if (Path.GetExtension(path) == ".zip")
             {
-                ZipArchive archive = ZipFile.OpenRead(path);
-                ZipArchiveEntry firstRom = archive.Entries.First(F => Path.GetExtension(F.Name) == ".nes");
-                System.Console.WriteLine("Loading " + firstRom.Name + " from zip.");
-
-                Stream stream = firstRom.Open();
-                MemoryStream mStream = new MemoryStream();
-                stream.CopyTo(mStream);
-                mStream.Seek(0, SeekOrigin.Begin);
-                reader = new BinaryReader(mStream);
+                reader = LoadZipFile(path);
             }
             else if(Path.GetExtension(path) == ".gz")
             {
-                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                GZipStream gZipStream = new GZipStream(stream, CompressionMode.Decompress);
-                MemoryStream mStream = new MemoryStream();
-                gZipStream.CopyTo(mStream);
-                mStream.Seek(0, SeekOrigin.Begin);
-                reader = new BinaryReader(mStream);
+                reader = LoadGZipFile(path);
             }
             else
             {
-                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                reader = new BinaryReader(stream);
-
+                reader = LoadNesFile(path);
             }
+
+            //if (this.Invalid) return;
             
-            Invalid = false;
             ParseHeader(reader);
             LoadPrgRom(reader);
             LoadChr(reader);
@@ -255,6 +242,44 @@ namespace Nescafe
 
             // Mapper Number
             MapperNumber = _flags7 & 0xF0 | (_flags6 >> 4 & 0xF);
+        }
+
+        private BinaryReader LoadZipFile(String path)
+        {
+            ZipArchive archive = ZipFile.OpenRead(path);
+            ZipArchiveEntry firstRom = archive.Entries.First(F => Path.GetExtension(F.Name) == ".nes");
+            System.Console.WriteLine("Loading " + firstRom.Name + " from zip.");
+
+            Stream stream = firstRom.Open();
+            MemoryStream mStream = new MemoryStream();
+            stream.CopyTo(mStream);
+            mStream.Seek(0, SeekOrigin.Begin);
+            return new BinaryReader(mStream);
+        }
+
+        private BinaryReader LoadGZipFile(String path)
+        {
+            try
+            {
+                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                GZipStream gZipStream = new GZipStream(stream, CompressionMode.Decompress);
+                MemoryStream mStream = new MemoryStream();
+                gZipStream.CopyTo(mStream);
+                mStream.Seek(0, SeekOrigin.Begin);
+                return new BinaryReader(mStream);
+            }
+            catch
+            {
+                this.Invalid = true;
+                return new BinaryReader(new MemoryStream());
+            }
+            
+        }
+
+        private BinaryReader LoadNesFile(String path)
+        {
+            FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            return new BinaryReader(stream);
         }
     }   
 }
