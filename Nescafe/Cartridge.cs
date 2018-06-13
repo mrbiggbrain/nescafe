@@ -85,8 +85,6 @@ namespace Nescafe
         {
             BinaryReader reader;
 
-            System.Console.WriteLine(Path.GetExtension(path));
-
             if(Path.GetExtension(path) == ".zip")
             {
                 ZipArchive archive = ZipFile.OpenRead(path);
@@ -96,6 +94,16 @@ namespace Nescafe
                 Stream stream = firstRom.Open();
                 MemoryStream mStream = new MemoryStream();
                 stream.CopyTo(mStream);
+                mStream.Seek(0, SeekOrigin.Begin);
+                reader = new BinaryReader(mStream);
+            }
+            else if(Path.GetExtension(path) == ".gz")
+            {
+                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                GZipStream gZipStream = new GZipStream(stream, CompressionMode.Decompress);
+                MemoryStream mStream = new MemoryStream();
+                gZipStream.CopyTo(mStream);
+                mStream.Seek(0, SeekOrigin.Begin);
                 reader = new BinaryReader(mStream);
             }
             else
@@ -104,7 +112,7 @@ namespace Nescafe
                 reader = new BinaryReader(stream);
 
             }
-
+            
             Invalid = false;
             ParseHeader(reader);
             LoadPrgRom(reader);
@@ -190,7 +198,7 @@ namespace Nescafe
 
         void ParseHeader(BinaryReader reader)
         {
-            reader.BaseStream.Seek(0, SeekOrigin.Begin);
+            
             // Verify magic number
             uint magicNum = reader.ReadUInt32();
             if (magicNum != HeaderMagic)
